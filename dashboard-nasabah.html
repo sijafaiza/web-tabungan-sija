@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Nasabah - Sistem Tabungan</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f6fa;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #0093dd 0%, #f6c306 100%);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .navbar-brand {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .navbar-user {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .btn-logout {
+            background: rgba(255,255,255,0.2);
+            border: 2px solid white;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-logout:hover {
+            background: white;
+            color: #0093dd;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .saldo-card {
+            background: linear-gradient(135deg, #0093dd 0%, #f6c306 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 147, 221, 0.3);
+        }
+
+        .saldo-label {
+            font-size: 16px;
+            opacity: 0.9;
+            margin-bottom: 10px;
+        }
+
+        .saldo-value {
+            font-size: 48px;
+            font-weight: bold;
+        }
+
+        .rekening-info {
+            margin-top: 20px;
+            display: flex;
+            gap: 30px;
+            font-size: 14px;
+            opacity: 0.95;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .tab {
+            padding: 12px 25px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            color: #0093dd;
+            border-bottom-color: #0093dd;
+            font-weight: 600;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .filter-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group select {
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #0093dd;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #0093dd;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #0077b3;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table thead {
+            background: #f8f9fa;
+        }
+
+        table th {
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        table td {
+            padding: 12px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        table tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .badge-danger {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .badge-info {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .badge-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-item {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .stat-item-label {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .stat-item-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        .empty-state svg {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 15px;
+            opacity: 0.3;
+        }
+
+        .print-area {
+            display: none;
+        }
+
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            
+            .print-area, .print-area * {
+                visibility: visible;
+            }
+            
+            .print-area {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                display: block;
+            }
+
+            .no-print {
+                display: none !important;
+            }
+        }
+
+        .print-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #333;
+        }
+
+        .print-header h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .print-header p {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .print-info {
+            margin-bottom: 20px;
+        }
+
+        .print-info table {
+            width: auto;
+        }
+
+        .print-info td {
+            padding: 5px 10px;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-brand">💳 Dashboard Nasabah</div>
+        <div class="navbar-user">
+            <span id="userName"></span>
+            <button class="btn-logout" onclick="logout()">Logout</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="saldo-card">
+            <div class="saldo-label">Saldo Rekening</div>
+            <div class="saldo-value" id="saldoValue">Rp 0</div>
+            <div class="rekening-info">
+                <div>
+                    <strong>No. Rekening:</strong> <span id="noRekening"></span>
+                </div>
+                <div>
+                    <strong>Nama:</strong> <span id="namaNasabah"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('histori')">Histori Transaksi</button>
+            <button class="tab" onclick="switchTab('transaksi')">Transaksi Baru</button>
+            <button class="tab" onclick="switchTab('transfer')">Transfer</button>
+            <button class="tab" onclick="switchTab('mutasi')">Cetak Mutasi</button>
+            <button class="tab" onclick="switchTab('rekap')">Rekap Transaksi</button>
+        </div>
+
+        <!-- Tab Histori -->
+        <div id="histori-tab" class="tab-content active">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Histori Transaksi</h2>
+                </div>
+                
+                <div class="filter-section">
+                    <div class="form-group">
+                        <label>Dari Tanggal</label>
+                        <input type="date" id="filterDariTanggal">
+                    </div>
+                    <div class="form-group">
+                        <label>Sampai Tanggal</label>
+                        <input type="date" id="filterSampaiTanggal">
+                    </div>
+                    <div class="form-group">
+                        <label>Jenis Transaksi</label>
+                        <select id="filterJenis">
+                            <option value="">Semua</option>
+                            <option value="Setor">Setor</option>
+                            <option value="Tarik">Tarik</option>
+                            <option value="Transfer Masuk">Transfer Masuk</option>
+                            <option value="Transfer Keluar">Transfer Keluar</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="justify-content: flex-end;">
+                        <label>&nbsp;</label>
+                        <button class="btn btn-primary" onclick="applyFilterHistori()">Terapkan Filter</button>
+                    </div>
+                </div>
+
+                <div id="historiContent">
+                    <table id="tableHistori">
+                        <thead>
+                            <tr>
+                                <th>Tanggal</th>
+                                <th>Jenis</th>
+                                <th>Keterangan</th>
+                                <th>Jumlah</th>
+                                <th>Saldo</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodyHistori"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab Transaksi -->
+        <div id="transaksi-tab" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Transaksi Baru</h2>
+                </div>
+                
+                <form id="formTransaksiNasabah" style="max-width: 500px;">
+                    <div class="form-group">
+                        <label>Jenis Transaksi</label>
+                        <select id="jenisTransaksi" required>
+                            <option value="">Pilih Jenis</option>
+                            <option value="Setor">Setor Tunai</option>
+                            <option value="Tarik">Tarik Tunai</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Jumlah</label>
+                        <input type="number" id="jumlahTransaksi" min="10000" step="10000" placeholder="Minimal Rp 10.000" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Keterangan (Opsional)</label>
+                        <textarea id="keteranganTransaksi" rows="3" placeholder="Catatan transaksi"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Proses Transaksi</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Tab Transfer -->
+        <div id="transfer-tab" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Transfer Antar Rekening</h2>
+                </div>
+                
+                <form id="formTransferNasabah" style="max-width: 500px;">
+                    <div class="form-group">
+                        <label>Rekening Tujuan</label>
+                        <input type="text" id="rekeningTujuan" placeholder="Masukkan nomor rekening tujuan" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Nama Penerima</label>
+                        <input type="text" id="namaPenerima" readonly placeholder="Akan muncul setelah memasukkan no rekening">
+                    </div>
+                    <div class="form-group">
+                        <label>Jumlah Transfer</label>
+                        <input type="number" id="jumlahTransfer" min="10000" step="10000" placeholder="Minimal Rp 10.000" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Keterangan (Opsional)</label>
+                        <textarea id="keteranganTransfer" rows="3" placeholder="Catatan transfer"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Proses Transfer</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Tab Mutasi -->
+        <div id="mutasi-tab" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Cetak Mutasi Rekening</h2>
+                </div>
+                
+                <div class="filter-section">
+                    <div class="form-group">
+                        <label>Dari Tanggal</label>
+                        <input type="date" id="mutasiDariTanggal">
+                    </div>
+                    <div class="form-group">
+                        <label>Sampai Tanggal</label>
+                        <input type="date" id="mutasiSampaiTanggal">
+                    </div>
+                    <div class="form-group" style="justify-content: flex-end;">
+                        <label>&nbsp;</label>
+                        <button class="btn btn-primary" onclick="cetakMutasi()">🖨️ Cetak Mutasi</button>
+                    </div>
+                </div>
+
+                <div id="previewMutasi"></div>
+            </div>
+        </div>
+
+        <!-- Tab Rekap -->
+        <div id="rekap-tab" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Rekap Transaksi</h2>
+                </div>
+                
+                <div class="filter-section">
+                    <div class="form-group">
+                        <label>Dari Tanggal</label>
+                        <input type="date" id="rekapDariTanggal">
+                    </div>
+                    <div class="form-group">
+                        <label>Sampai Tanggal</label>
+                        <input type="date" id="rekapSampaiTanggal">
+                    </div>
+                    <div class="form-group" style="justify-content: flex-end;">
+                        <label>&nbsp;</label>
+                        <button class="btn btn-primary" onclick="generateRekap()">Tampilkan Rekap</button>
+                    </div>
+                </div>
+
+                <div id="rekapContent"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Area untuk print -->
+    <div class="print-area" id="printArea"></div>
+
+    <!-- Area untuk print -->
+    <div class="print-area" id="printArea"></div>
+
+    <script src="db.js"></script>
+    <script src="nasabah-db.js"></script>
+</body>
+</html>
