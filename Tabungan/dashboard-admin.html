@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Admin - Sistem Tabungan</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f6fa;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #0093dd 0%, #f6c306 100%);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .navbar-brand {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .navbar-user {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .btn-logout {
+            background: rgba(255,255,255,0.2);
+            border: 2px solid white;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-logout:hover {
+            background: white;
+            color: #0093dd;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .tab {
+            padding: 12px 25px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            color: #0093dd;
+            border-bottom-color: #0093dd;
+            font-weight: 600;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #0093dd;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #0077b3;
+        }
+
+        .btn-success {
+            background: #1dd1a1;
+            color: white;
+        }
+
+        .btn-warning {
+            background: #feca57;
+            color: #333;
+        }
+
+        .btn-danger {
+            background: #ee5a6f;
+            color: white;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table thead {
+            background: #f8f9fa;
+        }
+
+        table th {
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        table td {
+            padding: 12px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        table tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #0093dd;
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 25px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .badge-danger {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .badge-info {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .badge-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #0093dd 0%, #f6c306 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 147, 221, 0.3);
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-brand">💰 Admin Dashboard</div>
+        <div class="navbar-user">
+            <span id="userName"></span>
+            <button class="btn-logout" onclick="logout()">Logout</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value" id="totalNasabah">0</div>
+                <div class="stat-label">Total Nasabah</div>
+            </div>
+            <div class="stat-card" style="background: linear-gradient(135deg, #1dd1a1 0%, #10ac84 100%);">
+                <div class="stat-value" id="totalTransaksi">0</div>
+                <div class="stat-label">Total Transaksi</div>
+            </div>
+            <div class="stat-card" style="background: linear-gradient(135deg, #feca57 0%, #ff9ff3 100%);">
+                <div class="stat-value" id="totalTransfer">0</div>
+                <div class="stat-label">Total Transfer</div>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('nasabah')">Data Nasabah</button>
+            <button class="tab" onclick="switchTab('transaksi')">Data Transaksi</button>
+            <button class="tab" onclick="switchTab('transfer')">Data Transfer</button>
+            <button class="tab" onclick="switchTab('pengguna')">Data Admin & Petugas</button>
+            <button class="tab" onclick="switchTab('log')">Log Aktivitas</button>
+        </div>
+
+        <!-- Tab Nasabah -->
+        <div id="nasabah-tab" class="tab-content active">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Data Nasabah</h2>
+                    <button class="btn btn-primary" onclick="openModalNasabah()">+ Tambah Nasabah</button>
+                </div>
+                <table id="tableNasabah">
+                    <thead>
+                        <tr>
+                            <th>No. Rekening</th>
+                            <th>Nama</th>
+                            <th>Alamat</th>
+                            <th>Telepon</th>
+                            <th>Saldo</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbodyNasabah"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Tab Transaksi -->
+        <div id="transaksi-tab" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Data Transaksi</h2>
+                    <button class="btn btn-primary" onclick="openModalTransaksi()">+ Tambah Transaksi</button>
+                </div>
+                <table id="tableTransaksi">
+                    <thead>
+                        <tr>
+                            <th>Tanggal</th>
+                            <th>No. Rekening</th>
+                            <th>Nama</th>
+                            <th>Jenis</th>
+                            <th>Jumlah</th>
+                            <th>Keterangan</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbodyTransaksi"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Tab Transfer -->
+        <div id="transfer-tab" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Data Transfer</h2>
+                    <button class="btn btn-primary" onclick="openModalTransfer()">+ Tambah Transfer</button>
+                </div>
+                <table id="tableTransfer">
+                    <thead>
+                        <tr>
+                            <th>Tanggal</th>
+                            <th>Dari Rekening</th>
+                            <th>Ke Rekening</th>
+                            <th>Jumlah</th>
+                            <th>Keterangan</th>
+                            <th>Status</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbodyTransfer"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Tab Pengguna -->
+        <div id="pengguna-tab" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Data Admin & Petugas</h2>
+                    <button class="btn btn-primary" onclick="openModalPengguna()">+ Tambah Pengguna</button>
+                </div>
+                <table id="tablePengguna">
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Nama</th>
+                            <th>Role</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbodyPengguna"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Tab Log -->
+        <div id="log-tab" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Log Aktivitas</h2>
+                    <button class="btn btn-warning" onclick="clearLogs()">Hapus Semua Log</button>
+                </div>
+                <table id="tableLog">
+                    <thead>
+                        <tr>
+                            <th>Waktu</th>
+                            <th>User</th>
+                            <th>Role</th>
+                            <th>Aktivitas</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbodyLog"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Nasabah -->
+    <div id="modalNasabah" class="modal">
+        <div class="modal-content">
+            <div class="modal-header" id="modalNasabahTitle">Tambah Nasabah</div>
+            <form id="formNasabah">
+                <input type="hidden" id="nasabahId">
+                <div class="form-group">
+                    <label>No. Rekening</label>
+                    <input type="text" id="norek" required>
+                </div>
+                <div class="form-group">
+                    <label>Nama Lengkap</label>
+                    <input type="text" id="nama" required>
+                </div>
+                <div class="form-group">
+                    <label>Alamat</label>
+                    <textarea id="alamat" rows="3" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Telepon</label>
+                    <input type="text" id="telp" required>
+                </div>
+                <div class="form-group">
+                    <label>Saldo Awal</label>
+                    <input type="number" id="saldo" value="0" required>
+                </div>
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" id="usernameNasabah" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="passwordNasabah">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn" onclick="closeModalNasabah()">Batal</button>
+                    <button type="submit" class="btn btn-primary">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Transaksi -->
+    <div id="modalTransaksi" class="modal">
+        <div class="modal-content">
+            <div class="modal-header" id="modalTransaksiTitle">Tambah Transaksi</div>
+            <form id="formTransaksi">
+                <input type="hidden" id="transaksiId">
+                <div class="form-group">
+                    <label>No. Rekening</label>
+                    <select id="norekTransaksi" required></select>
+                </div>
+                <div class="form-group">
+                    <label>Jenis Transaksi</label>
+                    <select id="jenis" required>
+                        <option value="Setor">Setor</option>
+                        <option value="Tarik">Tarik</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Jumlah</label>
+                    <input type="number" id="jumlah" required>
+                </div>
+                <div class="form-group">
+                    <label>Keterangan</label>
+                    <textarea id="keterangan" rows="3"></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn" onclick="closeModalTransaksi()">Batal</button>
+                    <button type="submit" class="btn btn-primary">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Transfer -->
+    <div id="modalTransfer" class="modal">
+        <div class="modal-content">
+            <div class="modal-header" id="modalTransferTitle">Tambah Transfer</div>
+            <form id="formTransfer">
+                <input type="hidden" id="transferId">
+                <div class="form-group">
+                    <label>Dari Rekening</label>
+                    <select id="dariRek" required></select>
+                </div>
+                <div class="form-group">
+                    <label>Ke Rekening</label>
+                    <select id="keRek" required></select>
+                </div>
+                <div class="form-group">
+                    <label>Jumlah</label>
+                    <input type="number" id="jumlahTransfer" required>
+                </div>
+                <div class="form-group">
+                    <label>Keterangan</label>
+                    <textarea id="keteranganTransfer" rows="3"></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn" onclick="closeModalTransfer()">Batal</button>
+                    <button type="submit" class="btn btn-primary">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Pengguna -->
+    <div id="modalPengguna" class="modal">
+        <div class="modal-content">
+            <div class="modal-header" id="modalPenggunaTitle">Tambah Pengguna</div>
+            <form id="formPengguna">
+                <input type="hidden" id="penggunaUsername">
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" id="usernamePengguna" required>
+                </div>
+                <div class="form-group">
+                    <label>Nama Lengkap</label>
+                    <input type="text" id="namaPengguna" required>
+                </div>
+                <div class="form-group">
+                    <label>Role</label>
+                    <select id="rolePengguna" required>
+                        <option value="">Pilih Role</option>
+                        <option value="admin">Admin</option>
+                        <option value="petugas">Petugas</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="passwordPengguna">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn" onclick="closeModalPengguna()">Batal</button>
+                    <button type="submit" class="btn btn-primary">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Area untuk print -->
+    <div class="print-area" id="printArea"></div>
+
+    <script src="db.js"></script>
+    <script src="admin-db.js"></script>
+</body>
+</html>
