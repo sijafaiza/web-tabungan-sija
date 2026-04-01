@@ -1,3 +1,5 @@
+import { checkAuth, logout, NasabahAPI, TransaksiAPI, TransferAPI, LogAPI, formatRupiah, formatTanggal, formatTanggalSaja } from './db.js';
+
 // Cek autentikasi
 const currentUser = checkAuth('nasabah');
 if (!currentUser) {
@@ -577,3 +579,10 @@ async function loadData() {
 }
 
 loadData();
+
+// Expose functions to window for onclick handlers (required for ES Modules)
+window.logout = logout;
+window.switchTab = switchTab;
+window.applyFilterHistori = applyFilterHistori;
+window.generateRekap = generateRekap;
+window.cetakMutasi = cetakMutasi;

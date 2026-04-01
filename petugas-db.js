@@ -1,3 +1,5 @@
+import { checkAuth, logout, NasabahAPI, TransaksiAPI, TransferAPI, LogAPI, formatRupiah, formatTanggal, formatTanggalSaja } from './db.js';
+
 // Cek autentikasi
 const currentUser = checkAuth('petugas');
 if (!currentUser) {
@@ -349,3 +351,9 @@ async function loadData() {
 }
 
 loadData();
+
+// Expose functions to window for onclick handlers (required for ES Modules)
+window.logout = logout;
+window.switchTab = switchTab;
+window.applyFilter = applyFilter;
+window.cetakMutasi = cetakMutasi;

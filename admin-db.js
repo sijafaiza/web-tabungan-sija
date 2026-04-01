@@ -1,4 +1,4 @@
-import { checkAuth, NasabahAPI, TransaksiAPI, TransferAPI, PenggunaAPI, LogAPI, formatRupiah, formatTanggal, formatTanggalSaja } from './db.js';
+import { checkAuth, logout, NasabahAPI, TransaksiAPI, TransferAPI, PenggunaAPI, LogAPI, formatRupiah, formatTanggal, formatTanggalSaja } from './db.js';
 // Cek autentikasi
 const currentUser = checkAuth('admin');
 if (!currentUser) {
@@ -578,19 +578,24 @@ async function loadData() {
 
 // Initial load
 loadData();
-// Di akhir file admin-db.js, tambahkan ini:
+
+// Expose functions to window for onclick handlers (required for ES Modules)
+window.logout = logout;
+window.switchTab = switchTab;
 window.openModalNasabah = openModalNasabah;
 window.closeModalNasabah = closeModalNasabah;
 window.editNasabah = editNasabah;
 window.deleteNasabah = deleteNasabah;
-window.switchTab = switchTab;
-window.logout = logout;
-
-// Tambahkan juga untuk fungsi modal lainnya agar tidak error nantinya
 window.openModalTransaksi = openModalTransaksi;
 window.closeModalTransaksi = closeModalTransaksi;
+window.editTransaksi = editTransaksi;
+window.deleteTransaksi = deleteTransaksi;
 window.openModalTransfer = openModalTransfer;
 window.closeModalTransfer = closeModalTransfer;
+window.editTransfer = editTransfer;
+window.deleteTransfer = deleteTransfer;
 window.openModalPengguna = openModalPengguna;
 window.closeModalPengguna = closeModalPengguna;
+window.editPengguna = editPengguna;
+window.deletePengguna = deletePengguna;
 window.clearLogs = clearLogs;
