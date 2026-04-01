@@ -578,3 +578,19 @@ async function loadData() {
 
 // Initial load
 loadData();
+// Di akhir file admin-db.js, tambahkan ini:
+window.openModalNasabah = openModalNasabah;
+window.closeModalNasabah = closeModalNasabah;
+window.editNasabah = editNasabah;
+window.deleteNasabah = deleteNasabah;
+window.switchTab = switchTab;
+window.logout = logout;
+
+// Tambahkan juga untuk fungsi modal lainnya agar tidak error nantinya
+window.openModalTransaksi = openModalTransaksi;
+window.closeModalTransaksi = closeModalTransaksi;
+window.openModalTransfer = openModalTransfer;
+window.closeModalTransfer = closeModalTransfer;
+window.openModalPengguna = openModalPengguna;
+window.closeModalPengguna = closeModalPengguna;
+window.clearLogs = clearLogs;
