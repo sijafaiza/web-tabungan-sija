@@ -42,12 +42,13 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
         if (user.role === 'nasabah') {
             const { data: nasabah, error: nasabahError } = await supabase
                 .from('nasabah')
-                .select('saldo, alamat, telp')
+                .select('norek, saldo, alamat, telp')
                 .eq('username', username)
                 .maybeSingle();
             if (nasabahError) console.error('Nasabah error:', nasabahError);
             if (nasabah) {
                 user.saldo = nasabah.saldo;
+                user.norek = nasabah.norek;
                 user.alamat = nasabah.alamat;
                 user.telp = nasabah.telp;
             }
