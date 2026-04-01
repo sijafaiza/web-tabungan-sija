@@ -8,16 +8,31 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
     const password = document.getElementById('password').value;
     const errorMessage = document.getElementById('errorMessage');
     
+    console.log('🔍 Login attempt:', username);
+    
     try {
-        // Cari user
+        // Cek koneksi Supabase
+        const { data: test, error: testError } = await supabase.from('users').select('count');
+        console.log('📡 Supabase connection test:', { test, testError });
+        
+        // Query login
         const { data: user, error } = await supabase
             .from('users')
             .select('*')
             .eq('username', username)
             .eq('password', password)
-            .single();
+            .maybeSingle();
         
-        if (error || !user) {
+        console.log('👤 User query result:', { user, error });
+        
+        if (error) {
+            console.error('❌ Supabase error:', error);
+            errorMessage.textContent = 'Database error: ' + error.message;
+            errorMessage.style.display = 'block';
+            return;
+        }
+        
+        if (!user) {
             errorMessage.textContent = 'Username atau password salah';
             errorMessage.style.display = 'block';
             return;
@@ -25,11 +40,12 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
         
         // Jika nasabah, ambil data lengkap
         if (user.role === 'nasabah') {
-            const { data: nasabah } = await supabase
+            const { data: nasabah, error: nasabahError } = await supabase
                 .from('nasabah')
                 .select('saldo, alamat, telp')
                 .eq('username', username)
-                .single();
+                .maybeSingle();
+            if (nasabahError) console.error('Nasabah error:', nasabahError);
             if (nasabah) {
                 user.saldo = nasabah.saldo;
                 user.alamat = nasabah.alamat;
@@ -37,7 +53,7 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
             }
         }
         
-        // Log aktivitas
+        // Log aktivitas (abaikan error)
         await supabase.from('log_aktivitas').insert([{
             timestamp: new Date().toISOString(),
             user: user.nama,
@@ -48,9 +64,9 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
         sessionStorage.setItem('currentUser', JSON.stringify(user));
         window.location.href = `dashboard-${user.role}.html`;
         
-    } catch (error) {
-        console.error(error);
-        errorMessage.textContent = 'Terjadi kesalahan koneksi';
+    } catch (err) {
+        console.error('💥 Unexpected error:', err);
+        errorMessage.textContent = 'Koneksi error: ' + err.message;
         errorMessage.style.display = 'block';
     }
 });
