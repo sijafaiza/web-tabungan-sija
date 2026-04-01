@@ -1,32 +1,6 @@
-// Konfigurasi API
-const API_URL = 'http://localhost/tabungan'; // Sesuaikan dengan folder Anda
+// login.js
+import { supabase } from './supabase-client.js'
 
-// Inisialisasi data default (untuk pertama kali)
-async function initDefaultData() {
-    // Cek apakah sudah ada data di database
-    try {
-        const response = await fetch(`${API_URL}/api_login.php`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                username: 'admin',
-                password: 'admin123'
-            })
-        });
-        
-        const result = await response.json();
-        if (result.success) {
-            console.log('Database sudah siap');
-        }
-    } catch (error) {
-        console.error('Error koneksi database:', error);
-        alert('Tidak dapat terhubung ke database. Pastikan XAMPP/Apache dan MySQL sudah running!');
-    }
-}
-
-// Login handler
 document.getElementById('loginForm').addEventListener('submit', async function(e) {
     e.preventDefault();
     
@@ -35,35 +9,48 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
     const errorMessage = document.getElementById('errorMessage');
     
     try {
-        const response = await fetch(`${API_URL}/api_login.php`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                username: username,
-                password: password
-            })
-        });
+        // Cari user
+        const { data: user, error } = await supabase
+            .from('users')
+            .select('*')
+            .eq('username', username)
+            .eq('password', password)
+            .single();
         
-        const result = await response.json();
-        
-        if (result.success) {
-            // Simpan session
-            sessionStorage.setItem('currentUser', JSON.stringify(result.user));
-            
-            // Redirect ke dashboard sesuai role
-            window.location.href = `dashboard-${result.user.role}.html`;
-        } else {
-            errorMessage.textContent = result.message || 'Username atau password tidak sesuai!';
+        if (error || !user) {
+            errorMessage.textContent = 'Username atau password salah';
             errorMessage.style.display = 'block';
+            return;
         }
+        
+        // Jika nasabah, ambil data lengkap
+        if (user.role === 'nasabah') {
+            const { data: nasabah } = await supabase
+                .from('nasabah')
+                .select('saldo, alamat, telp')
+                .eq('username', username)
+                .single();
+            if (nasabah) {
+                user.saldo = nasabah.saldo;
+                user.alamat = nasabah.alamat;
+                user.telp = nasabah.telp;
+            }
+        }
+        
+        // Log aktivitas
+        await supabase.from('log_aktivitas').insert([{
+            timestamp: new Date().toISOString(),
+            user: user.nama,
+            role: user.role,
+            aktivitas: 'Login ke sistem'
+        }]);
+        
+        sessionStorage.setItem('currentUser', JSON.stringify(user));
+        window.location.href = `dashboard-${user.role}.html`;
+        
     } catch (error) {
-        console.error('Error:', error);
-        errorMessage.textContent = 'Tidak dapat terhubung ke server. Pastikan XAMPP sudah running!';
+        console.error(error);
+        errorMessage.textContent = 'Terjadi kesalahan koneksi';
         errorMessage.style.display = 'block';
     }
 });
-
-// Init saat page load
-initDefaultData();
