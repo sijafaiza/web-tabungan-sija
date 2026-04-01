@@ -1,4 +1,4 @@
-// Cek autentikasi
+export function checkAuth(requiredRole) { import { checkAuth, NasabahAPI, TransaksiAPI, TransferAPI, PenggunaAPI, LogAPI, formatRupiah, formatTanggal, formatTanggalSaja } from './db.js'; }// Cek autentikasi
 const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
 if (!currentUser || currentUser.role !== 'admin') {
     window.location.href = 'index.html';
